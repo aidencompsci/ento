@@ -1,7 +1,7 @@
 # About
 Ento is an Entity Component System written in Go. 
 
-[![Go](https://github.com/wfranczyk/ento/actions/workflows/go.yml/badge.svg)](https://github.com/wfranczyk/ento/actions/workflows/go.yml)
+[![Go](https://github.com/aidencompsci/ento/actions/workflows/go.yml/badge.svg)](https://github.com/aidencompsci/ento/actions/workflows/go.yml)
 
 # Getting Started
 
@@ -11,7 +11,7 @@ From [hello.go](./examples/hello/hello.go):
 
 ```go
 import (
-	"github.com/wfranczyk/ento"
+	"github.com/aidencompsci/ento"
 )
 
 type Component1 struct{ value int }

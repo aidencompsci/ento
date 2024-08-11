@@ -1,3 +1,4 @@
+//go:build examples
 // +build examples
 
 // MIT License
@@ -25,7 +26,7 @@
 package main
 
 import (
-	"github.com/wfranczyk/ento"
+	"github.com/aidencompsci/ento"
 )
 
 type Component1 struct{ value int }

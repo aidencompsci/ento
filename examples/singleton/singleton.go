@@ -1,3 +1,4 @@
+//go:build examples
 // +build examples
 
 // MIT License
@@ -24,7 +25,7 @@
 
 package main
 
-import "github.com/wfranczyk/ento"
+import "github.com/aidencompsci/ento"
 
 type NormalComponent struct{ value int }
 type SingletonComponent struct{ value int }
