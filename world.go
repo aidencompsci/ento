@@ -38,7 +38,13 @@ type World struct {
 
 func (w *World) AddSystems(systems ...System) {
 	for _, system := range systems {
-		w.systems = append(w.systems, newSystemBinder(w, system))
+		w.systems = append(w.systems, newSystemBinder(w, system, "default"))
+	}
+}
+
+func (w *World) AddSystemsTagged(tag string, systems ...System) {
+	for _, system := range systems {
+		w.systems = append(w.systems, newSystemBinder(w, system, tag))
 	}
 }
 
@@ -67,6 +73,17 @@ func (w *World) Update() {
 		for element := w.entities.Front(); element != nil; element = element.Next() {
 			entity := element.Value.(*Entity)
 			w.systems[i].update(entity)
+		}
+	}
+}
+
+func (w *World) UpdateTagged(tag string) {
+	for i := range w.systems {
+		if w.systems[i].tag == tag {
+			for element := w.entities.Front(); element != nil; element = element.Next() {
+				entity := element.Value.(*Entity)
+				w.systems[i].update(entity)
+			}
 		}
 	}
 }

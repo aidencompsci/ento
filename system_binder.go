@@ -29,6 +29,7 @@ import (
 
 type systemBinder struct {
 	System
+	tag      string
 	mask     mask
 	ids      []int
 	stores   []Store
@@ -37,7 +38,7 @@ type systemBinder struct {
 	required []bool
 }
 
-func newSystemBinder(world *World, system System) systemBinder {
+func newSystemBinder(world *World, system System, tag string) systemBinder {
 	const (
 		componentTag         = "ento"
 		componentTagRequired = "required"
@@ -84,6 +85,7 @@ func newSystemBinder(world *World, system System) systemBinder {
 
 	return systemBinder{
 		System:   system,
+		tag:      tag,
 		mask:     mask,
 		ids:      ids,
 		stores:   stores,
