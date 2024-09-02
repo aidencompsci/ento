@@ -7,9 +7,7 @@ Ento is an Entity Component System written in Go.
 
 See [examples](./examples) folder.
 
-From [query.go](./examples/query/query.go):
-
-https://github.com/aidencompsci/ento/blob/099616b242ceaaf10c824683d3b3620c27c6319c/examples/query/query.go?plain=1#L26
+https://github.com/aidencompsci/ento/blob/099616b242ceaaf10c824683d3b3620c27c6319c/examples/query/query.go?plain=1#L26-87
 
 # License
 
