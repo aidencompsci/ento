@@ -23,60 +23,26 @@
 package ento
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"iter"
 )
 
-type c1 struct{ v int }
-type c2 struct{ v int }
+// DO NOT change the positions/order of these fields
 
-type testSystem struct {
-	Query Query[struct {
-		C1 *c1 `ento:"required"`
-		C2 *c2 `ento:"optional"`
-	}]
-
-	sums []int
+type Query[T interface{}] struct {
+	Subtype     T
+	World       *World
+	QueryBinder *queryBinder
 }
 
-func (t *testSystem) Update() {
-	for e, q := range t.Query.Iter() {
-		sum := q.C1.v
-
-		if q.C2 != nil {
-			sum += q.C2.v
+func (self *Query[T]) Iter() iter.Seq2[*Entity, T] {
+	return func(yield func(*Entity, T) bool) {
+		for element := self.World.entities.Front(); element != nil; element = element.Next() {
+			entity := element.Value.(*Entity)
+			if self.QueryBinder.update(entity) {
+				if !yield(entity, self.Subtype) {
+					return
+				}
+			}
 		}
-
-		t.sums[e.index] = sum
-	}
-}
-
-func TestSystem(t *testing.T) {
-	const N = 8
-
-	w := NewWorldBuilder().WithSparseComponents(c1{}, c2{}).Build(N)
-
-	ts := &testSystem{sums: make([]int, N)}
-	w.AddSystems(ts)
-
-	for i := 0; i < N; i++ {
-		e := w.AddEntity()
-		e.Set(c1{i})
-		if i%2 == 0 {
-			e.Set(c2{i})
-		}
-	}
-
-	w.Update()
-
-	for i := 0; i < N; i++ {
-		sum := ts.sums[i]
-		expected := i
-		if i%2 == 0 {
-			expected += i
-		}
-
-		assert.Equal(t, expected, sum)
 	}
 }

@@ -3,7 +3,7 @@
 
 // MIT License
 //
-// Copyright (c) 2021 Wojciech Franczyk
+// Copyright (c) 2024 Aidenwork
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,31 +33,37 @@ type Component1 struct{ value int }
 type Component2 struct{ value int }
 type Component3 struct{ value int }
 
-type System struct {
-	// Always use pointer to base component type (!)
-	// Add `ento` tag to automatically bind components
-	C1 *Component1 `ento:"required"`
-	C2 *Component2 `ento:"required"`
-	C3 *Component2 `ento:"optional"`
+// Create a System which will operate on queries
+// Use only Public fields for queries
 
-	// Systems can have non-component-bound fields
+type System struct {
+	// Construct the first query
+	Query1 ento.Query[struct {
+		// Query components must be embedded pointers and Public
+		*Component1 `ento:"required"`
+	}]
+
+	// Second query
+	Query2 ento.Query[struct {
+		*Component3 `ento:"required"`
+	}]
+
+	// unused by the ECS, make non-query fields as desired
 	calls int
 }
 
-// Update implements ento.System
-// Based on `ento` tag, entities will be selected for update by the system.
-// Entities that do not contain all the `required` components will be skipped.
-func (s *System) Update(entity *ento.Entity) {
-	// Before Update is called, all tagged components
-	// will be replaced with values from entity
-	s.C1.value += s.C2.value
-
-	// Optional field will be set to null if entity does not contain them
-	if s.C3 != nil {
-		s.C1.value += s.C3.value
+func (self *System) Update() {
+	// Iterate over the entities in the queries using go's `range` and `iter`
+	for e, v := range self.Query1.Iter() {
+		// .. do work ..
+		for e2, v2 := range self.Query2.Iter() {
+			// .. do work ..
+			for e3, v3 := range self.Query1.Iter() {
+				// .. do work ..
+			}
+		}
 	}
 
-	s.calls++
 }
 
 func main() {
@@ -68,33 +74,14 @@ func main() {
 		// Pre-allocate space for 256 entities (world can grow beyond that automatically)
 		Build(256)
 
-	// Add systems
-	system := &System{}
-	world.AddSystems(system)
+	// Add entities
+	world.AddEntity(Component1{1})
+	world.AddEntity(Component1{2}, Component2{3})
+	world.AddEntity(Component3{4})
 
-	// Create an entity (it is added to the world immediately)
-	entity := world.AddEntity(Component1{1}, Component2{1})
+	// Add system
+	world.AddSystems(&System{})
 
-	// Use Set to add or change entity components
-	entity.Set(Component3{1})
-
-	// Update the world
+	// Update all systems in the world a single time
 	world.Update()
-	println(system.calls) // prints: 1
-
-	// Use Get to receive component value (or nil if not present)
-	var c1 *Component1
-	entity.Get(&c1)
-	println(c1.value == 3) // prints: true
-
-	// Use Rem to remove component from entity
-	// As Component2 is `required` in the System
-	// it will no longer be updated by it
-	entity.Rem(Component2{})
-
-	world.Update()
-	println(system.calls) // prints: 1 - the system was not called
-
-	entity.Get(&c1)
-	println(c1.value == 3) // true - the entity is no longer updated by the system
 }

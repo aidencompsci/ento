@@ -70,20 +70,14 @@ func (w *World) RemoveEntity(entity *Entity) {
 
 func (w *World) Update() {
 	for i := range w.systems {
-		for element := w.entities.Front(); element != nil; element = element.Next() {
-			entity := element.Value.(*Entity)
-			w.systems[i].update(entity)
-		}
+		w.systems[i].Update()
 	}
 }
 
 func (w *World) UpdateTagged(tag string) {
 	for i := range w.systems {
 		if w.systems[i].tag == tag {
-			for element := w.entities.Front(); element != nil; element = element.Next() {
-				entity := element.Value.(*Entity)
-				w.systems[i].update(entity)
-			}
+			w.systems[i].Update()
 		}
 	}
 }

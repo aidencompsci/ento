@@ -23,5 +23,5 @@
 package ento
 
 type System interface {
-	Update(entity *Entity)
+	Update()
 }
